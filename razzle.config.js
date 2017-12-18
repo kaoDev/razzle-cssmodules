@@ -29,6 +29,8 @@ module.exports = {
 
     const extractTextPluginOptions = {};
 
+    console.log("##############################", dev, isServer);
+
     if (dev) {
       appConfig.module.rules = appConfig.module.rules.map(rule => {
         if (rule.test && !!".css".match(rule.test)) {
@@ -45,15 +47,15 @@ module.exports = {
                   }
                 ]
               : [
-                  "style-loader",
+                  require.resolve("style-loader"),
                   {
-                    loader: "css-loader",
+                    loader: require.resolve("css-loader"),
                     options: {
                       importLoaders: 1
                     }
                   },
                   {
-                    loader: "postcss-loader",
+                    loader: require.resolve("postcss-loader"),
                     options: postCSSLoaderOptions
                   }
                 ]
@@ -67,7 +69,7 @@ module.exports = {
         use: isServer
           ? [
               {
-                loader: "css-loader",
+                loader: require.resolve("css-loader"),
                 options: {
                   importLoaders: 1,
                   modules: true,
@@ -76,9 +78,9 @@ module.exports = {
               }
             ]
           : [
-              "style-loader",
+              require.resolve("style-loader"),
               {
-                loader: "css-loader",
+                loader: require.resolve("css-loader"),
                 options: {
                   importLoaders: 1,
                   modules: true,
@@ -86,7 +88,7 @@ module.exports = {
                 }
               },
               {
-                loader: "postcss-loader",
+                loader: require.resolve("postcss-loader"),
                 options: postCSSLoaderOptions
               }
             ]
@@ -109,7 +111,9 @@ module.exports = {
                   {
                     loader: require.resolve("css-loader"),
                     options: {
-                      importLoaders: 1
+                      importLoaders: 1,
+                      minimize: true,
+                      sourceMap: true
                     }
                   },
                   {
@@ -123,6 +127,8 @@ module.exports = {
         }
         return rule;
       });
+
+      console.dir(appConfig.module.rules[4].use);
 
       appConfig.module.rules.push({
         test: /\.module\.css$/,
@@ -139,6 +145,8 @@ module.exports = {
                 loader: require.resolve("css-loader"),
                 options: {
                   importLoaders: 1,
+                  minimize: true,
+                  sourceMap: true,
                   modules: true,
                   localIdentName: "[path]__[name]___[local]"
                 }
@@ -152,9 +160,11 @@ module.exports = {
         }
       });
 
-      appConfig.plugins.push(
-        new ExtractTextPlugin("static/css/[name].[contenthash:8].css")
-      );
+      if (!isServer) {
+        appConfig.plugins.push(
+          new ExtractTextPlugin("static/css/[name].[contenthash:8].css")
+        );
+      }
     }
 
     loader: return appConfig;
