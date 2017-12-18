@@ -99,72 +99,56 @@ module.exports = {
           return {
             test: /\.css$/,
             exclude: /\.module\.css$/,
-            use: {
-              loader: ExtractTextPlugin.extract({
-                fallback: {
-                  loader: require.resolve("style-loader"),
+            use: ExtractTextPlugin.extract({
+              fallback: {
+                loader: require.resolve("style-loader"),
+                options: {
+                  hmr: false
+                }
+              },
+              use: [
+                {
+                  loader: require.resolve("css-loader"),
                   options: {
-                    hmr: false
+                    importLoaders: 1,
+                    minimize: true,
+                    sourceMap: true
                   }
-                },
-                use: [
-                  {
-                    loader: require.resolve("css-loader"),
-                    options: {
-                      importLoaders: 1,
-                      minimize: true,
-                      sourceMap: true
-                    }
-                  },
-                  {
-                    loader: require.resolve("postcss-loader"),
-                    options: postCSSLoaderOptions
-                  }
-                ]
-              })
-            }
+                }
+              ]
+            })
           };
         }
         return rule;
       });
 
-      console.dir(appConfig.module.rules[4].use);
-
       appConfig.module.rules.push({
         test: /\.module\.css$/,
-        use: {
-          loader: ExtractTextPlugin.extract({
-            fallback: {
-              loader: require.resolve("style-loader"),
+        use: ExtractTextPlugin.extract({
+          fallback: {
+            loader: require.resolve("style-loader"),
+            options: {
+              hmr: false
+            }
+          },
+          use: [
+            {
+              loader: require.resolve("css-loader"),
               options: {
-                hmr: false
+                importLoaders: 1,
+                minimize: true,
+                sourceMap: true,
+                modules: true,
+                localIdentName: "[path]__[name]___[local]"
               }
-            },
-            use: [
-              {
-                loader: require.resolve("css-loader"),
-                options: {
-                  importLoaders: 1,
-                  minimize: true,
-                  sourceMap: true,
-                  modules: true,
-                  localIdentName: "[path]__[name]___[local]"
-                }
-              },
-              {
-                loader: require.resolve("postcss-loader"),
-                options: postCSSLoaderOptions
-              }
-            ]
-          })
-        }
+            }
+          ]
+        })
       });
 
-      if (!isServer) {
-        appConfig.plugins.push(
-          new ExtractTextPlugin("static/css/[name].[contenthash:8].css")
-        );
-      }
+      appConfig.plugins.push(
+        new ExtractTextPlugin("static/css/[name].[contenthash:8].css")
+      );
     }
 
     loader: return appConfig;
