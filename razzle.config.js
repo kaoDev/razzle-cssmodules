@@ -27,10 +27,6 @@ module.exports = {
       ]
     };
 
-    const extractTextPluginOptions = {};
-
-    console.log("##############################", dev, isServer);
-
     if (dev) {
       appConfig.module.rules = appConfig.module.rules.map(rule => {
         if (rule.test && !!".css".match(rule.test)) {
@@ -93,7 +89,7 @@ module.exports = {
               }
             ]
       });
-    } else {
+    } else if (!dev && !isServer) {
       appConfig.module.rules = appConfig.module.rules.map(rule => {
         if (rule.test && !!".css".match(rule.test)) {
           return {
@@ -114,6 +110,10 @@ module.exports = {
                     minimize: true,
                     sourceMap: true
                   }
+                },
+                {
+                  loader: require.resolve("postcss-loader"),
+                  options: postCSSLoaderOptions
                 }
               ]
             })
@@ -141,6 +141,10 @@ module.exports = {
                 modules: true,
                 localIdentName: "[path]__[name]___[local]"
               }
+            },
+            {
+              loader: require.resolve("postcss-loader"),
+              options: postCSSLoaderOptions
             }
           ]
         })
@@ -149,6 +153,38 @@ module.exports = {
       appConfig.plugins.push(
         new ExtractTextPlugin("static/css/[name].[contenthash:8].css")
       );
+    } else if (!dev && isServer) {
+      appConfig.module.rules = appConfig.module.rules.map(rule => {
+        if (rule.test && !!".css".match(rule.test)) {
+          return {
+            test: /\.css$/,
+            exclude: /\.module\.css$/,
+            use: {
+              loader: require.resolve("css-loader"),
+              options: {
+                importLoaders: 1,
+                minimize: true,
+                sourceMap: true
+              }
+            }
+          };
+        }
+        return rule;
+      });
+
+      appConfig.module.rules.push({
+        test: /\.module\.css$/,
+        use: {
+          loader: require.resolve("css-loader"),
+          options: {
+            importLoaders: 1,
+            minimize: true,
+            sourceMap: true,
+            modules: true,
+            localIdentName: "[path]__[name]___[local]"
+          }
+        }
+      });
     }
 
     loader: return appConfig;

@@ -7,4 +7,4 @@ Configuration is copied from https://github.com/facebookincubator/create-react-a
 ## Isuues
 
 - https://github.com/jaredpalmer/razzle/issues/428
-- https://github.com/webpack-contrib/css-loader/issues/231
+
