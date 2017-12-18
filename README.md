@@ -17,3 +17,5 @@ In the browser (http://localhost:3000)
 ```
 proxyConsole.js:54 Warning: Prop `className` did not match. Server: "null" Client: "src-__Home-module___logo"
 ```
+
+It seems that `isomorphic-style-loader` can solve this problem.

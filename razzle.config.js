@@ -64,6 +64,7 @@ module.exports = {
         test: /\.module\.css$/,
         use: isServer
           ? [
+              "isomorphic-style-loader",
               {
                 loader: require.resolve("css-loader"),
                 options: {
@@ -159,14 +160,16 @@ module.exports = {
           return {
             test: /\.css$/,
             exclude: /\.module\.css$/,
-            use: {
-              loader: require.resolve("css-loader"),
-              options: {
-                importLoaders: 1,
-                minimize: true,
-                sourceMap: true
+            use: [
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  importLoaders: 1,
+                  minimize: true,
+                  sourceMap: true
+                }
               }
-            }
+            ]
           };
         }
         return rule;
@@ -174,16 +177,19 @@ module.exports = {
 
       appConfig.module.rules.push({
         test: /\.module\.css$/,
-        use: {
-          loader: require.resolve("css-loader"),
-          options: {
-            importLoaders: 1,
-            minimize: true,
-            sourceMap: true,
-            modules: true,
-            localIdentName: "[path]__[name]___[local]"
+        use: [
+          "isomorphic-style-loader",
+          {
+            loader: require.resolve("css-loader"),
+            options: {
+              importLoaders: 1,
+              minimize: true,
+              sourceMap: true,
+              modules: true,
+              localIdentName: "[path]__[name]___[local]"
+            }
           }
-        }
+        ]
       });
     }
 
